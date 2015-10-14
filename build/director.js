@@ -1,8 +1,8 @@
 
 
 //
-// Generated on Tue Dec 16 2014 12:13:47 GMT+0100 (CET) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
-// Version 1.2.6
+// Generated on Wed Oct 14 2015 17:28:14 GMT-0600 (MDT) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
+// Version 1.2.9
 //
 
 (function (exports) {
@@ -64,14 +64,7 @@ var listener = {
       || document.documentMode > 7)) {
       // At least for now HTML5 history is available for 'modern' browsers only
       if (this.history === true) {
-        // There is an old bug in Chrome that causes onpopstate to fire even
-        // upon initial page load. Since the handler is run manually in init(),
-        // this would cause Chrome to run it twise. Currently the only
-        // workaround seems to be to set the handler after the initial page load
-        // http://code.google.com/p/chromium/issues/detail?id=63040
-        setTimeout(function() {
-          window.onpopstate = onchange;
-        }, 500);
+        window.onpopstate = onchange;
       }
       else {
         window.onhashchange = onchange;
@@ -394,7 +387,7 @@ Router.prototype.configure = function(options) {
   for (var i = 0; i < this.methods.length; i++) {
     this._methods[this.methods[i]] = true;
   }
-  this.recurse = options.recurse || this.recurse || false;
+  this.recurse = typeof options.recurse === "undefined" ? this.recurse || false : options.recurse;
   this.async = options.async || false;
   this.delimiter = options.delimiter || "/";
   this.strict = typeof options.strict === "undefined" ? true : options.strict;
@@ -591,7 +584,7 @@ Router.prototype.traverse = function(method, path, routes, regexp, filter) {
           fns = fns.concat(next);
         }
         if (this.recurse) {
-          fns.push([ routes[r].before, routes[r].on ].filter(Boolean));
+          fns.push([ routes[r].before, routes[r][method] ].filter(Boolean));
           next.after = next.after.concat([ routes[r].after ].filter(Boolean));
           if (routes === this.routes) {
             fns.push([ routes["before"], routes["on"] ].filter(Boolean));
